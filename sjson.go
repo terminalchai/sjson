@@ -163,7 +163,7 @@ func appendBuild(buf []byte, array bool, paths []pathResult, raw string,
 
 // atoui does a rip conversion of string -> unigned int.
 func atoui(r pathResult) (n int, ok bool) {
-	if r.force {
+	if r.force || len(r.part) == 0 {
 		return 0, false
 	}
 	for i := 0; i < len(r.part); i++ {
@@ -515,9 +515,6 @@ type sliceHeader struct {
 
 func set(jstr, path, raw string,
 	stringify, del, optimistic, inplace bool) ([]byte, error) {
-	if path == "" {
-		return []byte(jstr), &errorType{"path cannot be empty"}
-	}
 	if !del && optimistic && isOptimisticPath(path) {
 		res := gjson.Get(jstr, path)
 		if res.Exists() && res.Index > 0 {
